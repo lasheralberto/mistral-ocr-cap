@@ -1,0 +1,41 @@
+{
+  "name": "mistral-ocr-cap",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@mistralai/mistralai": "^1.7.1",
+    "@sap/cds": "^8",
+    "@sap/textbundle": "^5.4.0",
+    "@sap/xssec": "^4",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/cds-types": "^0.10.0",
+    "@sap/cds-dk": "^8"
+  },
+  "scripts": {
+    "start": "cds-serve"
+  },
+  "cds": {
+    "i18n": {
+      "folders": [
+        "srv/i18n"
+      ]
+    },
+    "requires": {
+      "[production]": {
+        "auth": "xsuaa"
+      },
+      "[development]": {
+        "auth": {
+          "kind": "mocked"
+        }
+      },
+      "auth": "xsuaa"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+_schema-version: 3.3.0
+ID: mistral-ocr-cap
+version: 1.0.0
+description: "CAP Project for Mistral OCR"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+modules:
+  - name: mistral-ocr-cap-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      instances: 1
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: mistral-ocr-cap-auth
+
+resources:
+  - name: mistral-ocr-cap-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: mistral-ocr-cap-${org}-${space}
+        tenant-mode: dedicated

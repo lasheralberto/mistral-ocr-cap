@@ -1,0 +1,7 @@
+
+POST http://localhost:4004/odata/v4/service-template/demoAction
+Content-Type: application/json
+
+{ 
+    "input": "Hello" 
+}
