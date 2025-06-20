@@ -6,14 +6,16 @@ service ScanService @(requires: 'any') {
     type : String;
     schema : LargeString;
     urls: array of String;
+    base64:array of LargeString;
+    processingType: String;
   };
 
-  type MessageResponse {
-      message : String;
-      status: String
-  }
+  type DocumentScanResult {
+    nombreDocumento: String;
+    datos: LargeString; // Cambia a una estructura si sabes el formato
+  };
 
   @HTTP.POST
-  action performScan (query: BodySchema) returns MessageResponse;
+  action performScan(query: BodySchema) returns array of DocumentScanResult;
 
 }

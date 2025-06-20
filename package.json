@@ -11,7 +11,15 @@
     "@sap/cds": "^8",
     "@sap/textbundle": "^5.4.0",
     "@sap/xssec": "^4",
-    "express": "^4"
+    "body-parser": "^2.2.0",
+    "express": "^4",
+    "fs": "^0.0.1-security",
+    "node-fetch": "^3.3.2",
+    "path": "^0.12.7",
+    "pdf-extract": "^1.0.11",
+    "pdf-parse": "^1.1.1",
+    "pdf2json": "^3.1.6",
+    "pdfjs-dist": "^5.3.31"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.10.0",
@@ -21,6 +29,7 @@
     "start": "cds-serve"
   },
   "cds": {
+    "server": "server.js",
     "i18n": {
       "folders": [
         "srv/i18n"
@@ -29,13 +38,7 @@
     "requires": {
       "[production]": {
         "auth": "xsuaa"
-      },
-      "[development]": {
-        "auth": {
-          "kind": "mocked"
-        }
-      },
-      "auth": "xsuaa"
+      }
     }
   }
 }
