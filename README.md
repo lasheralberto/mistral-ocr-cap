@@ -1,82 +1,148 @@
-# Getting Started
+![Banner](.github/images/banner.png)
 
-Welcome to your new project.
+# Mistral OCR CAP Service
 
-It contains these folders and files, following our recommended project layout:
+A robust SAP Cloud Application Programming Model (CAP) service designed to process PDF documents and perform Optical Character Recognition (OCR) using the Mistral AI API. This service enables developers to extract structured information from scanned documents or PDFs within the SAP BTP ecosystem.
 
-File or Folder | Purpose
----------|----------
-`app/` | content for UI frontends goes here
-`db/` | your domain models and data go here
-`srv/` | your service models and code go here
-`package.json` | project metadata and configuration
-`readme.md` | this getting started guide
+## 🚀 Overview
 
+`mistral-ocr-cap` bridges the gap between document storage and intelligent data extraction. By combining the power of SAP CAP with Mistral AI's advanced language models, this project provides a scalable backend for document processing workflows.
 
-## Next Steps
+### Key Features
+- **PDF Analysis**: Pre-processes PDF files using `pdf-parse` and `pdf2json`.
+- **Mistral AI Integration**: Leverages the official Mistral AI SDK to perform high-accuracy OCR.
+- **SAP BTP Ready**: Built-in support for XSUAA security, MTA deployment, and SAP HANA.
+- **Customizable Logic**: Modular utility structure for PDF analysis and OCR communication.
 
-- Open a new terminal and run `cds watch`
-- (in VS Code simply choose _**Terminal** > Run Task > cds watch_)
-- Start adding content, for example, a [db/schema.cds](db/schema.cds).
+---
 
+## 🛠️ Tech Stack
+- **Framework**: [SAP CAP (Node.js)](https://cap.cloud.sap/)
+- **AI Engine**: [Mistral AI API](https://mistral.ai/)
+- **Runtime**: Node.js 18+ (ESM)
+- **Security**: SAP XSUAA
+- **Utilities**: `pdf-parse`, `pdf2json`, `@mistralai/mistralai`
 
-## Learn More
+---
 
-Learn more at https://cap.cloud.sap/docs/get-started/.
+## 📂 Project Structure
 
+```text
+├── srv/
+│   ├── scan-service.cds      # Service definition (OData/REST)
+│   ├── scan-service.js       # Main service logic
+│   ├── utils/
+│   │   ├── mistral-ocr.js    # Mistral AI API wrapper
+│   │   └── pdf-analyzer.js   # PDF parsing utilities
+│   ├── resources/            # i18n and sample files
+│   └── test.http             # API testing file
+├── mta.yaml                  # Deployment descriptor for BTP
+├── server.js                 # Custom CAP server entry point
+└── package.json              # Dependencies and scripts
+```
 
-- npm install -g npm@latest 
-- o npm i -g @sap/cds-dk or npm update --global @sap/cds-dk
-- npm install @sap/textbundle
-- npm install @sap-cloud-sdk/http-client
-- npm install @sap-cloud-sdk/resilience
+---
 
-## Create new project
+## ⚙️ Setup & Installation
 
-- cds init
-- cds add hana,mta,xsuaa --for production  (hana only if database is required)
-- npm update --package-lock-only
+### Prerequisites
+- [SAP CDS Development Kit](https://cap.cloud.sap/docs/get-started/)
+- A Mistral AI API Key
 
-## Optional Libraries
+### Installation
+1. Clone the repository.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `default-env.json` (or `.env`) file in the root directory to store your credentials:
+   ```json
+   {
+     "MISTRAL_API_KEY": "your_api_key_here"
+   }
+   ```
 
-- npm install node-cache
-- npm install fast-sort
-- npm install decimal.js
-- npm install moment
+---
 
-## BTP Deployment
+## 🚀 Usage
 
-- mbt build
-- cf login
-- cf deploy mta_archives/cap-service-template_1.0.0.mtar
+### Local Development
+To start the service in development mode:
+```bash
+cds watch
+```
+The service will be available at `http://localhost:4004`.
 
-## Execute
+### Testing the API
+Use the provided `srv/test.http` file or your preferred HTTP client (Postman/cURL) to trigger the OCR process.
 
-- cds watch
-- cds watch --profile development (for development only  - defined package.json)
-- cds watch --profile hybrid ==> (execute the default-env.json when using sap btp destinations VCAP_SERVICES)
+**Example Request:**
+```http
+POST http://localhost:4004/scan/processPdf
+Content-Type: application/json
 
-## Enviroment variables
-
-A new .env file must be created : default-env.json
-
-Example:
 {
-  "DEMO_CUSTOM_VARIABLE": "This is a CUSTOM_VARIABLE"
+    "fileName": "scan_2-27.pdf"
 }
+```
 
-## Security
+### Integration Snippet
+The core logic resides in `srv/utils/mistral-ocr.js`. Here is how the Mistral client is initialized:
 
-Examples:
-@(requires: 'any')
-@(requires: 'Admin')
-@(requires: 'Consumer')
+```javascript
+import { Mistral } from '@mistralai/mistralai';
 
-Execute:
+const apiKey = process.env.MISTRAL_API_KEY;
+const client = new Mistral({ apiKey });
 
+export async function performOcr(pdfBuffer) {
+    // Logic to send buffer to Mistral OCR endpoint
+    const response = await client.ocr.process({
+        model: "mistral-ocr-latest",
+        document: {
+            type: "content",
+            content: pdfBuffer.toString('base64')
+        }
+    });
+    return response;
+}
+```
+
+---
+
+## ☁️ BTP Deployment
+
+### 1. Build the Project
+Generate the deployment MTAR file:
+```bash
+mbt build
+```
+
+### 2. Deploy to Cloud Foundry
+Login to your SAP BTP space and deploy:
+```bash
+cf login
+cf deploy mta_archives/mistral-ocr-cap_1.0.0.mtar
+```
+
+### 3. Security Configuration
+The service is configured to use XSUAA. Ensure your `xs-security.json` is updated. To generate a fresh one:
+```bash
 cds compile srv --to xsuaa > xs-security.json
+```
 
-## External Access
+---
 
-(1) Create the Service Key for the xxx-service-auth 
-(2) Access with oAuth2 by Client_Id and Client_Secret
+## 📜 Available Scripts
+
+- `npm start`: Standard CAP server startup.
+- `cds watch`: Local development with hot-reload.
+- `cds watch --profile hybrid`: Runs locally but connects to BTP services (Destinations, XSUAA).
+
+---
+
+## 📝 License
+This project is `UNLICENSED`. See the [LICENSE](LICENSE) file for more information.
+
+---
+*Created with ❤️ using SAP CAP and Mistral AI.*
